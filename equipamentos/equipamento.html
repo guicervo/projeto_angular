@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html ng-app="equipamentos">
+<head>
+	<meta charset="utf-8">
+	<title>Controle de equipamentos</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+	<script src="../angular/angular.js"></script>
+	<script src="equipamento.js"></script>
+	<link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	<script src="../bootstrap/js/bootstrap.min.js"></script>
+</head>
+<body ng-controller="equipamentosCtrl">
+	<div class="container-fluid">
+	    	<nav class="navbar navbar-default">
+		      <div class="container">
+		        <!-- Brand and toggle get grouped for better mobile display -->
+		        <div class="navbar-header">
+		          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1">
+		            <span class="sr-only">Toggle navigation</span>
+		            <span class="icon-bar"></span>
+		            <span class="icon-bar"></span>
+		            <span class="icon-bar"></span>
+		          </button>
+		          <a class="navbar-brand" href="../index.html">Controle de equipamentos</a>
+		        </div>
+		        <!-- Collect the nav links, forms, and other content for toggling -->
+		        <div class="collapse navbar-collapse" id="navbar-collapse-1">
+		          <ul class="nav navbar-nav navbar-right">
+		            <li><a href="../clientes/cliente.html">Cliente</a></li>
+		            <li><a href="equipamento.html">Equipamento</a></li>
+		           </ul>
+		        </div><!-- /.navbar-collapse -->
+		      </div><!-- /.container -->
+			</nav><!-- /.navbar -->
+	</div>
+	<div class="container">
+	<div class="container">
+		<div class="row">
+
+			<div class="col-sm-12 col-md-12"><h3>{{pagina}}</h3></div>
+			<div class="col-sm-12 col-md-12">
+				<div class="cadastro_cliente">
+					<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Cadastrar {{pagina}}</button>		
+				  	<div class="modal fade" id="myModal" role="dialog">
+				    	<div class="modal-dialog">
+				      		<div class="modal-content">
+					        	<div class="modal-header">
+					          		<button type="button" class="close" data-dismiss="modal">&times;</button>
+					          		<h4 class="modal-title">Cadastro de {{pagina}}</h4>
+					        	</div>
+					        	<div class="modal-body">
+					          		<form name="equipamentoForm">
+					          			<div class="row">
+					          				<div class="col-md-6 col-md-6">
+					          					<select ng-options="cliente.id as cliente.nome for cliente in clientes" ng-model="dados.selectClient" name="selectClient" class="form-control" ng-required="true">
+					          						<option value="">Selecione um cliente</option>
+					          					</select>
+					          				</div>
+					          				<div class="col-md-6 col-md-6">
+					          					<select ng-options="func.id as func.nome for func in funcionarios" ng-model="dados.selectFunc" name="selectFunc" class="form-control">
+					          						<option value="">Selecione um funcionario</option>
+					          					</select>					          				
+					          				</div>
+					          				<div class="col-md-12 col-md-12">
+					          					<br /><input class="form-control" type="text" name="marca" ng-model="dados.marca" ng-required="true" placeholder="Marca">
+					          				</div>
+					          				<div class="col-md-12 col-md-12">
+					          					<br /><input class="form-control" type="text" name="tipo" ng-model="dados.tipo" ng-required="true" placeholder="Tipo">
+					          				</div>					          				
+					          				<div class="col-md-12 col-md-12">
+					          					<br /><textarea class="form-control" name="problema" ng-model="dados.problema" ng-required="true" placeholder="Descreva o problema..."></textarea>
+					          				</div>					          									          				
+					          			</div>
+					          			<br/>
+					          			<div class="mensagens">
+											<div ng-show="equipamentoForm.selectClient.$error.required && equipamentoForm.selectClient.$dirty" class="alert alert-danger">
+							          			Selecione um cliente!
+							          		</div>
+							          		<div ng-show="equipamentoForm.marca.$error.required && equipamentoForm.marca.$dirty" class="alert alert-danger">
+							          			Preencha o campo marca!
+							          		</div>
+
+							          		<div ng-show="equipamentoForm.tipo.$error.required && equipamentoForm.tipo.$dirty" class="alert alert-danger">
+							          			Preencha o campo tipo!
+							          		</div>
+
+							          		<div ng-show="equipamentoForm.problema.$error.required && equipamentoForm.problema.$dirty" class="alert alert-danger">
+							          			Descreva um pouco do problema!
+							          		</div>					          				
+					          			</div>
+					          		</form>
+					          		<div class="row">
+					          			<div class="col-sm-12 col-md-12">
+					          				<button class="btn btn-primary" ng-click="adicionarEquipamento(dados);" ng-disabled="equipamentoForm.$invalid" data-dismiss="modal">Cadastrar</button>
+					          			</div>
+					          		</div>		
+					        	</div>
+					        	<div class="modal-footer">
+					          		<button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+					        	</div>
+				      		</div>
+				        </div>
+				  	</div>			
+				</div>
+			</div>
+			<div class="col-sm-12 col-md-12">
+				<br /><br /><br />
+				<input type="text" ng-model="busca" class="form-control" name="" placeholder="Pesquise pelo nome do cliente">
+			</div>				
+			<div class="col-sm-12 col-md-12" style="margin-top: 50px;">
+				<div ng-show="equipamentos == false"><h4>Nenhum equipamento cadastrado.</h4></div>
+				 <table class="table" ng-hide="equipamentos == false">
+				 	<tr>
+				 		<th><a href="" ng-click="ordenarPor('cliente')">Cliente</a></th>
+				 		<th><a href="" ng-click="ordenarPor('telefone')">Telefone</a></th>
+				 		<th><a href="" ng-click="ordenarPor('funcionario')">Func. Responsável</a></th>
+				 		<th><a href="" ng-click="ordenarPor('marca')">Marca</a></th>
+				 		<th><a href="" ng-click="ordenarPor('status')">Status</a></th>
+				 		<th><a href="" ng-click="ordenarPor('data')">Data Cadastro</a></th>
+				 		<th>Imagens</th>
+				 		<th style="text-align: center;">Enviar Notificação</th>
+				 		<th>Editar</th>
+				 		<th>Excluir</th>
+				 	</tr>
+				 	<tr ng-repeat="equipamento in equipamentos | filter:{cliente: busca} | orderBy: criterioDeOrdenacao:direcaoOrdenacao">
+				 		<td>{{equipamento.cliente}}</td>
+				 		<td>{{equipamento.telefone}}</td>
+				 		<td>{{equipamento.funcionario}}</td>
+				 		<td>{{equipamento.marca}}</td>
+				 		<td>{{equipamento.status}}</td>
+				 		<td>{{equipamento.data | date:'dd/MM/yyyy'}}</td>
+				 		<td style="text-align: center;"><a href="" data-toggle="modal" data-target="#myModal_images" ng-click="getImagensByEquipamento(equipamento.id);"><span class="glyphicon glyphicon-picture"></span></a></td>				 		
+				 		<td style="text-align: center;"><a href="" ng-click="salvaEnviaEquipamento(equipamento.id);" data-toggle="modal" data-target="#myModal_notificacao"><span class="glyphicon glyphicon-envelope"></span></a></td>				 		
+				 		<td><a href="" data-toggle="modal" data-target="#myModal_edit" ng-click="getEquipamentoById(equipamento.id)"><span class="glyphicon glyphicon-pencil"></span></a></td>
+				 		<td><a href="" ng-click="excluirEquipamento(equipamento.id);"><span class="glyphicon glyphicon-remove"></span></a></td>
+				 	</tr>
+				 </table>
+			</div>
+
+<!-- div edição equipamento -->
+		  	<div class="modal fade" id="myModal_edit" role="dialog">
+		    	<div class="modal-dialog">
+		      		<div class="modal-content">
+			        	<div class="modal-header">
+			          		<button type="button" class="close" data-dismiss="modal">&times;</button>
+			          		<h4 class="modal-title">Controle de {{pagina}}</h4>
+			        	</div>
+			        	<div class="modal-body">
+			          		<form name="editarEquipamentoForm" >
+			          			<div class="row" ng-repeat="editarEquipamento in eEquipamento">
+			          				<div class="col-md-6 col-md-6">
+			          					<select ng-options="cliente.id as cliente.nome for cliente in clientes" ng-model="editarEquipamento.id_cliente" name="selectClient" class="form-control" ng-required="true">
+			          						<option value="">Selecione um cliente</option>
+			          					</select>
+			          				</div>
+			          				<div class="col-md-6 col-md-6">
+			          					<select ng-options="func.id as func.nome for func in funcionarios" ng-model="editarEquipamento.id_func_responsavel" name="selectFunc" class="form-control">
+			          						<option value="">Selecione um funcionario</option>
+			          					</select>					          				
+			          				</div>
+			          				<div class="col-md-12 col-md-12">
+			          					<br /><input class="form-control" type="text" name="marca" ng-model="editarEquipamento.marca" ng-required="true" placeholder="Marca">
+			          				</div>
+			          				<div class="col-md-12 col-md-12">
+			          					<br /><input class="form-control" type="text" name="tipo" ng-model="editarEquipamento.tipo" ng-required="true" placeholder="Tipo">
+			          				</div>					          				
+			          				<div class="col-md-12 col-md-12">
+			          					<br /><textarea class="form-control" name="problema" ng-model="editarEquipamento.problema" ng-required="true" placeholder="Descreva o problema..."></textarea>
+			          				</div>	
+			          				<div class="col-md-12 col-md-12">
+			          					<br /><textarea class="form-control" name="relatorio" ng-model="editarEquipamento.re_descricao" placeholder="Descreva o relatório para enviar ao cliente."></textarea>
+			          				</div>				          				
+			          				<div class="col-md-6 col-md-6">
+			          					<br />
+			          					<select ng-options="se.status as se.status for se in statusEquipamento" ng-model="editarEquipamento.status" name="statEquipamento" class="form-control" ng-required="true">
+			          						<option value="">Selecione um status</option>
+			          					</select>					          				
+			          				</div>	
+			          				<div class="col-md-6 col-md-6">
+			          					<br />
+			          					<select ng-options="rc.status as rc.status for rc in retornoCliente" ng-model="editarEquipamento.rc_status" name="retornoCliente" class="form-control">
+			          						<option value="">Retorno do cliente</option>
+			          					</select>					          				
+			          				</div>		
+			          			<br/>
+				          			<div class="mensagens">
+										<div ng-show="editarEquipamentoForm.selectClient.$error.required && editarEquipamentoForm.selectClient.$dirty" class="alert alert-danger">
+						          			Selecione um cliente!
+						          		</div>
+						          		<div ng-show="editarEquipamentoForm.marca.$error.required && editarEquipamentoForm.marca.$dirty" class="alert alert-danger">
+						          			Preencha o campo marca!
+						          		</div>
+
+						          		<div ng-show="editarEquipamentoForm.tipo.$error.required && editarEquipamentoForm.tipo.$dirty" class="alert alert-danger">
+						          			Preencha o campo tipo!
+						          		</div>
+
+						          		<div ng-show="editarEquipamentoForm.problema.$error.required && editarEquipamentoForm.problema.$dirty" class="alert alert-danger">
+						          			Descreva um pouco do problema!
+						          		</div>	
+						          		<div ng-show="editarEquipamentoForm.statEquipamento.$error.required && editarEquipamentoForm.statEquipamento.$dirty" class="alert alert-danger">
+						          			É obrigatório um status do equipamento!
+						          		</div>						          						          				
+				          			</div>
+			          			<br/>					          			         			
+				          			<div class="col-sm-12 col-md-12">
+				          				<input type="hidden" name="" ng-model="editarEquipamento.id" value="" />
+				          				<br/><br/><button class="btn btn-primary" ng-click="salvaEquipamento(editarEquipamento);" ng-disabled="editarEquipamentoForm.$invalid" data-dismiss="modal">Salvar</button>
+										<button class="btn btn-primary" ng-click="salvaEnviaEquipamento(editarEquipamento);" ng-disabled="editarEquipamentoForm.$invalid" data-dismiss="modal">Salvar e enviar notificação</button>			
+				          			</div>
+			          			</div>	
+			          		</form>				        		
+				        	<div class="modal-footer">
+				          		<button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+				        	</div>
+		  				</div>
+		      		</div>
+		        </div>
+		  	</div>	
+<!-- fim edição equipamento -->
+
+<!-- Modal imagens -->
+		  	<div class="modal fade" id="myModal_images" role="dialog">
+		    	<div class="modal-dialog">
+		      		<div class="modal-content">
+			        	<div class="modal-header">
+			          		<button type="button" class="close" data-dismiss="modal">&times;</button>
+			          		<h4 class="modal-title">Cadastro de imagens</h4>
+			        	</div>
+			        	<div class="modal-body">
+			          		<div class="row">
+		          				<div class="col-md-12 col-sm-12">
+									<br /><br /><div class="file-upload"><input type="file" file-model="myFile"/></div> <br />			          			
+								</div>
+								<div class="col-md-12 col-sm-12">
+										<button class="btn btn-primary" ng-click="uploadFile(id_equipamento);">Salvar</button>	
+								</div>
+			        		</div>
+		          			<div class="row" style="margin-top: 10px;">
+		          				<div class="col-sm-4 col-md-4" ng-repeat="i in imagens"  style="margin-bottom: 5px;">
+		          					<a href="" ng-click="excluirImagem(i.id, i.id_equipamento);"><span class="glyphicon glyphicon-remove"></span></a>
+		          					<img src="../uploads/{{i.nome_foto}}" style="width: 130px;">
+		          				</div>		          				
+		          			</div>			        		
+				        	<div class="modal-footer">
+				          		<button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+				        	</div>
+		      			</div>
+		      		</div>
+		        </div>
+		  	</div>
+
+<!-- Fim Modal Images -->
+
+<!-- Modal notificacao -->
+		  	<div class="modal fade" id="myModal_notificacao" role="dialog">
+		    	<div class="modal-dialog">
+		      		<div class="modal-content">
+			        	<div class="modal-header">
+			          		<h4 class="modal-title">Envio de notificação</h4>
+			        	</div>
+			        	<div class="modal-body">
+			          		<div class="row">
+			          			<div class="col-md-12 col-sm-12">
+					          		<p>Enviando notificação, aguarde.</p>
+					          		<p>Pode levar alguns minutos, conforme sua conexão com a internet.</p>			          				
+			          			</div>
+			        		</div>
+		      			</div>
+		      		</div>
+		        </div>
+		  	</div>
+<!-- Fim Modal notificacao -->
+
+		</div>
+	</div>		
+	</div>
+</body>
+</html>
